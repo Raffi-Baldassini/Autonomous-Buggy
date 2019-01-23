@@ -1,0 +1,59 @@
+import controlP5.*;
+
+import processing.serial.*;
+
+ControlP5 GUI;
+Serial MyPort;
+Textarea BuggyComs;
+String inString;
+void setup()
+{
+ size(800,200);
+ GUI = new ControlP5(this);
+ String portName = Serial.list()[3];
+ MyPort = new Serial(this, portName, 9600);
+ MyPort.write("+++");
+ delay(1100);
+ MyPort.write("ATID 3209, CH C, CN");
+ delay(1100);
+
+ MyPort. bufferUntil( 10 );
+ Button StartButton = GUI.addButton("Start");
+ StartButton.setPosition(100,40);
+ StartButton.setSize(200,20);
+ Button StopButton = GUI.addButton("Stop");
+ StopButton.setPosition(500,40);
+ StopButton.setSize(200,20);
+ BuggyComs = GUI.addTextarea("txt")
+                  .setPosition(100,100)
+                  .setSize(600,50)
+                  .setFont(createFont("Arial",14))
+                  .setLineHeight(14)
+                  .setColor(color(50))
+                  .setColorBackground(color(255,100))
+                  .setColorForeground(color(255,100));
+                  ;
+
+
+}
+
+public void controlEvent( ControlEvent ev )
+{
+  MyPort.write( ev.getController().getName() );
+  MyPort.write( "\n" );
+}
+
+void serialEvent(Serial MyPort)
+{
+  inString = MyPort.readString();
+  inString.trim();
+
+}
+
+void draw()
+{
+  if(inString.contains("The"))
+  {
+  BuggyComs.setText( inString );
+  }
+}
